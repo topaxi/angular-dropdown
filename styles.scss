@@ -1,0 +1,29 @@
+$ng-dropdown-content-background-color: #fff !default;
+$ng-dropdown-content-z-index: 1000 !default;
+
+ng-dropdown, ng-dropdown-content {
+  box-sizing: border-box;
+}
+
+ng-dropdown {
+  position: relative;
+}
+
+ng-dropdown-content {
+  position: absolute;
+  width: auto;
+  z-index: $ng-dropdown-content-z-index;
+  background-color: $ng-dropdown-content-background-color;
+}
+
+.ng-dropdown-content--left { left: 0; }
+.ng-dropdown-content--right { right: 0; }
+
+.ng-dropdown-overlay {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  z-index: $ng-dropdown-content-z-index - 100;
+}

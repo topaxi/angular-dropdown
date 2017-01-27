@@ -1,0 +1,38 @@
+{
+  "name": "angular-dropdown",
+  "version": "0.0.0",
+  "description": "Simple angular dropdown component.",
+  "main": "angular-dropdown.module.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/topaxi/angular-dropdown.git"
+  },
+  "keywords": [
+    "angular",
+    "dropdown"
+  ],
+  "author": "Damian Senn <damian.senn@topaxi.codes>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/topaxi/angular-dropdown/issues"
+  },
+  "homepage": "https://github.com/topaxi/angular-dropdown#readme",
+  "dependencies": {
+    "angular-wormhole": "^1.1.0"
+  },
+  "peerDependencies": {
+    "@angular/core": "^2.0.0",
+    "@angular/platform-browser": "^2.0.0",
+    "angular-wormhole": "^1.1.0",
+    "typescript": "^2.0.0"
+  },
+  "devDependencies": {
+    "@angular/core": "^2.0.0",
+    "@angular/platform-browser": "^2.0.0",
+    "angular-wormhole": "^1.1.0",
+    "typescript": "^2.0.0"
+  }
+}
