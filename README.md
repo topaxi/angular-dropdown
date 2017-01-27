@@ -2,6 +2,8 @@
 
 A simple angular dropdown component
 
+# WORK IN PROGRESS
+
 ## Installation
 
 ```bash
