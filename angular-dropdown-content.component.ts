@@ -27,11 +27,11 @@ const MutationObserver = window.MutationObserver;
     '[style.bottom]': 'dropdown?.bottom',
     '[style.left]': 'dropdown?.left',
     '[class.render-in-place]': 'dropdown?.renderInPlace',
-    '[class.ng-dropdown-content--above]': 'dropdown?.verticalPosition === "above"',
-    '[class.ng-dropdown-content--below]': 'dropdown?.verticalPosition === "below"',
-    '[class.ng-dropdown-content--right]': 'dropdown?.horizontalPosition === "right"',
-    '[class.ng-dropdown-content--center]': 'dropdown?.horizontalPosition === "center"',
-    '[class.ng-dropdown-content--left]': 'dropdown?.horizontalPosition === "left"'
+    '[class.ng-dropdown-content--above]': 'dropdown?.vPosition === "above"',
+    '[class.ng-dropdown-content--below]': 'dropdown?.vPosition === "below"',
+    '[class.ng-dropdown-content--right]': 'dropdown?.hPosition === "right"',
+    '[class.ng-dropdown-content--center]': 'dropdown?.hPosition === "center"',
+    '[class.ng-dropdown-content--left]': 'dropdown?.hPosition === "left"',
   }
 })
 export class AngularDropdownContentComponent
