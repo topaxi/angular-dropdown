@@ -22,7 +22,6 @@ const MutationObserver = window.MutationObserver;
   selector: 'ng-dropdown-content',
   template: '<ng-content></ng-content>',
   host: {
-    '[id]': 'id',
     '[style.top]': 'dropdown?.top',
     '[style.right]': 'dropdown?.right',
     '[style.bottom]': 'dropdown?.bottom',
@@ -47,20 +46,35 @@ export class AngularDropdownContentComponent
   isOpen: boolean = false;
 
   private hasMoved: boolean = false;
-  private animationClass: string = null;
+  private _animationClass: string = null;
   private isTouchDevice: boolean = 'ontouchstart' in window;
   private mutationObserver: MutationObserver = null;
 
+  //@Attribute('transitioning-in-class')
+  private transitioningInClass = 'ng-dropdown--transitioning-in';
+  //@Attribute('transitioned-in-class')
+  private transitionedInClass = 'ng-dropdown--transitioned-in';
+  //@Attribute('transitioning-out-class')
+  private transitioningOutClass = 'ng-dropdown--transitioning-out';
+
   constructor(
     public element: ElementRef,
-    @Attribute('transitioning-in-class')
-    private transitioningInClass = 'ng-dropdown--transitioning-in',
-    @Attribute('transitioned-in-class')
-    private transitionedInClass = 'ng-dropdown--transitioned-in',
-    @Attribute('transitioning-out-class')
-    private transitioningOutClass = 'ng-dropdown--transitioning-out',
     private zone: NgZone
   ) {
+  }
+
+  set animationClass(className: string) {
+    if (this._animationClass && className !== this._animationClass) {
+      this.element.nativeElement.classList.remove(this._animationClass);
+    }
+    else if (className) {
+      this.element.nativeElement.classList.add(className);
+    }
+    this._animationClass = className;
+  }
+
+  get animationClass(): string {
+    return this._animationClass;
   }
 
   get triggerElement(): Element {
@@ -72,8 +86,11 @@ export class AngularDropdownContentComponent
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (!changes['isOpen'].isFirstChange()) {
-      if (this.isOpen) {
+    if (changes['isOpen']) {
+      if (changes['isOpen'].isFirstChange()) {
+        this.element.nativeElement.id = this.id;
+      }
+      if (changes['isOpen'].currentValue) {
         this.open()
       }
       else {

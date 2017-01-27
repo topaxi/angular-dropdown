@@ -29,17 +29,19 @@ function generateDropdownId() {
   return id++;
 }
 
+export type VerticalPosition = 'auto' | 'above' | 'below';
+export type HorizontalPosition = 'auto' | 'right' | 'center' | 'left';
 
 @Component({
   selector: 'ng-dropdown',
   template: '<ng-wormhole to="#ng-dropdown-outlet" ' +
                 '[renderInPlace]="renderInPlace">' +
               '<div *ngIf="overlay && isOpen" class="ng-dropdown-overlay"></div>' +
-              '<ng-dropdown-content [id]="dropdownId" ' +
-                  'class="ng-dropdown-content" ' +
+              '<ng-dropdown-content *ngIf="isOpen" [id]="dropdownId" ' +
+                  'class="ng-dropdown-content slide-fade" ' +
                   '[isOpen]="isOpen" ' +
                   '[dropdown]="this">' +
-                '<ng-content *ngIf="isOpen"></ng-content>' +
+                '<ng-content></ng-content>' +
               '</ng-dropdown-content>' +
             '</ng-wormhole>',
   styles: [`
@@ -60,10 +62,8 @@ export class AngularDropdownComponent
   @Input()
   triggerElement: Element = null;
 
-  verticalPosition: 'auto' | 'above' | 'below' = 'auto';
-  horizontalPosition: 'auto' | 'right' | 'center' | 'left' = 'auto';
-  previousVerticalPosition: 'auto' | 'above' | 'below' = null;
-  previousHorizontalPosition: 'auto' | 'right' | 'center' | 'left' = null;
+  previousVerticalPosition: VerticalPosition = null;
+  previousHorizontalPosition: HorizontalPosition = null;
   matchTriggerWidth: boolean = false;
 
   isOpen: boolean = false;
@@ -103,15 +103,14 @@ export class AngularDropdownComponent
   private width: number = null;
 
   constructor(
-      @Attribute('id') id: string,
-      private element: ElementRef) {
-    if (id) {
-      this.id = this.uniqueId = id;
-    }
-    else {
-      this.uniqueId = generateDropdownId();
-      this.id = `ng-dropdown-${this.uniqueId}`;
-    }
+      @Attribute('vertical-position')
+      public verticalPosition: VerticalPosition = 'auto',
+      @Attribute('horizontal-position')
+      public horizontalPosition: HorizontalPosition = 'auto',
+      private element: ElementRef,
+      @Attribute('id')
+      id?: string) {
+    this.initializeId(id);
     this.createDefaultWormholeOutlet();
   }
 
@@ -144,7 +143,7 @@ export class AngularDropdownComponent
     this.isOpen = true;
   }
 
-  close(skipFocus = false) {
+  close(skipFocus = false): void {
     if (this.disabled || !this.isOpen) {
       return;
     }
@@ -175,7 +174,7 @@ export class AngularDropdownComponent
     }
   }
 
-  toggle() {
+  toggle(): void {
     if (this.isOpen) {
       this.close();
     }
@@ -194,18 +193,15 @@ export class AngularDropdownComponent
   }
 
   reposition = (): AngularDropdownPositionChanges => {
-    console.log('reposition()');
-
     if (!this.isOpen) {
       return;
     }
-
-    console.log('repositioning!');
 
     let dropdownElement = this.dropdownElement;
     if (!dropdownElement || !this.triggerElement) {
       return;
     }
+
     let calculatePosition = this.renderInPlace ?
       this.calculateInPlacePosition :
       this.calculatePosition;
@@ -218,14 +214,12 @@ export class AngularDropdownComponent
       previousVerticalPosition: this.previousVerticalPosition,
     };
 
-    console.log(calculatePosition);
     let positionData = calculatePosition(this.triggerElement, dropdownElement, options);
 
-    console.log({ positionData });
     return this.applyReposition(this.triggerElement, dropdownElement, positionData);
   }
 
-  private applyReposition(trigger: Element, dropdown: HTMLElement, positions) {
+  private applyReposition(trigger: Element, dropdown: HTMLElement, positions): AngularDropdownPositionChanges {
     let changes: any = {
       hPosition: positions.horizontalPosition,
       vPosition: positions.verticalPosition
@@ -252,8 +246,6 @@ export class AngularDropdownComponent
     }
 
     Object.assign(this, changes);
-    console.log(this);
-    setTimeout(() => console.log(this.dropdownContent), 10);
 
     this.previousHorizontalPosition = positions.horizontalPosition;
     this.previousVerticalPosition = positions.verticalPosition;
@@ -265,7 +257,17 @@ export class AngularDropdownComponent
     return document.getElementById(this.dropdownId);
   }
 
-  private createDefaultWormholeOutlet() {
+  private initializeId(id?): void {
+    if (id) {
+      this.id = this.uniqueId = id;
+    }
+    else {
+      this.uniqueId = generateDropdownId();
+      this.id = `ng-dropdown-${this.uniqueId}`;
+    }
+  }
+
+  private createDefaultWormholeOutlet(): void {
     if (!document.getElementById('ng-dropdown-outlet')) {
       let outlet = document.createElement('div');
       outlet.id = 'ng-dropdown-outlet';
