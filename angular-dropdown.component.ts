@@ -62,6 +62,8 @@ export class AngularDropdownComponent
   @Input()
   triggerElement: Element = null;
 
+  hPosition: HorizontalPosition = null;
+  vPosition: VerticalPosition = null;
   previousVerticalPosition: VerticalPosition = null;
   previousHorizontalPosition: HorizontalPosition = null;
   matchTriggerWidth: boolean = false;
