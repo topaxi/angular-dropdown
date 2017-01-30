@@ -116,12 +116,21 @@ export class AngularDropdownComponent
     this.createDefaultWormholeOutlet();
   }
 
+  triggerElementClickHandler = (): void => {
+    this.toggle();
+  }
+
   ngAfterViewInit(): void {
-    this.triggerElement.addEventListener('click', () => this.toggle());
+    this.triggerElement.addEventListener('click',
+      this.triggerElementClickHandler
+    );
     this.triggerElement.setAttribute('aria-controls', this.id);
   }
 
   ngOnDestroy(): void {
+    this.triggerElement.removeEventListener('click',
+      this.triggerElementClickHandler
+    );
   }
 
   ngOnChanges(changes: SimpleChanges): void {
