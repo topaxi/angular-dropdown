@@ -131,6 +131,7 @@ export class AngularDropdownComponent
     this.triggerElement.removeEventListener('click',
       this.triggerElementClickHandler
     );
+    this.triggerElement.removeAttribute('aria-controls');
   }
 
   ngOnChanges(changes: SimpleChanges): void {
