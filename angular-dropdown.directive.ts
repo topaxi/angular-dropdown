@@ -80,9 +80,9 @@ export class AngularDropdownDirective implements OnChanges {
   @Input()
   beforeClose: () => boolean = null;
 
-  @Input('vertical-position')
+  @Input()
   public verticalPosition: VerticalPosition = 'auto';
-  @Input('horizontal-position')
+  @Input()
   public horizontalPosition: HorizontalPosition = 'auto';
 
   @Output('open')

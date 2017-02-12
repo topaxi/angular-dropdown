@@ -58,9 +58,12 @@ export class AngularDropdownContentComponent
   private isTouchDevice: boolean = 'ontouchstart' in window;
   private mutationObserver: MutationObserver = null;
 
-  private transitioningInClass = 'ng-dropdown-content--transitioning-in';
-  private transitionedInClass = 'ng-dropdown-content--transitioned-in';
-  private transitioningOutClass = 'ng-dropdown-content--transitioning-out';
+  @Input()
+  transitioningInClass: string = 'ng-dropdown-content--transitioning-in';
+  @Input()
+  transitionedInClass: string = 'ng-dropdown-content--transitioned-in';
+  @Input()
+  transitioningOutClass: string = 'ng-dropdown-content--transitioning-out';
 
   private get dropdownElement(): HTMLElement {
     return this.dropdown.dropdownElement;
