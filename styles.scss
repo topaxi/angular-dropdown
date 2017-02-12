@@ -5,11 +5,11 @@ ng-dropdown, ng-dropdown-content {
   box-sizing: border-box;
 }
 
-ng-dropdown {
+.ng-dropdown {
   position: relative;
 }
 
-ng-dropdown-content {
+.ng-dropdown-content {
   position: absolute;
   width: auto;
   z-index: $ng-dropdown-content-z-index;

@@ -1,9 +1,17 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { AngularWormholeModule } from 'angular-wormhole';
-import { AngularDropdownComponent } from './angular-dropdown.component';
+import { NgModule }
+  from '@angular/core';
+import { BrowserModule }
+  from '@angular/platform-browser';
+
+import { AngularWormholeModule }
+  from 'angular-wormhole';
+
+import { AngularDropdownDirective }
+  from './angular-dropdown.directive';
 import { AngularDropdownContentComponent }
   from './angular-dropdown-content.component';
+import { AngularDropdownControlDirective }
+  from './angular-dropdown-control.directive';
 
 @NgModule({
   imports: [
@@ -11,11 +19,13 @@ import { AngularDropdownContentComponent }
     AngularWormholeModule
   ],
   declarations: [
-    AngularDropdownComponent,
+    AngularDropdownDirective,
+    AngularDropdownControlDirective,
     AngularDropdownContentComponent
   ],
   exports: [
-    AngularDropdownComponent,
+    AngularDropdownDirective,
+    AngularDropdownControlDirective,
     AngularDropdownContentComponent
   ]
 })

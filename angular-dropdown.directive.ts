@@ -1,19 +1,21 @@
 import {
   Component,
+  Directive,
   Attribute,
   Input,
   Output,
   ElementRef,
   AfterViewInit,
-  OnDestroy,
   OnChanges,
-  ViewChild,
+  ContentChild,
   SimpleChanges,
   EventEmitter,
   QueryList,
   ViewContainerRef
 } from '@angular/core';
 
+import { AngularDropdownControlDirective }
+  from './angular-dropdown-control.directive';
 import { AngularDropdownContentComponent }
   from './angular-dropdown-content.component';
 
@@ -32,35 +34,21 @@ function generateDropdownId() {
 export type VerticalPosition = 'auto' | 'above' | 'below';
 export type HorizontalPosition = 'auto' | 'right' | 'center' | 'left';
 
-@Component({
-  selector: 'ng-dropdown',
-  template: '<ng-wormhole to="#ng-dropdown-outlet" ' +
-                '[renderInPlace]="renderInPlace">' +
-              '<div *ngIf="overlay && isOpen" class="ng-dropdown-overlay"></div>' +
-              '<ng-dropdown-content *ngIf="isOpen" [id]="dropdownId" ' +
-                  'class="ng-dropdown-content slide-fade" ' +
-                  '[isOpen]="isOpen" ' +
-                  '[dropdown]="this">' +
-                '<ng-content></ng-content>' +
-              '</ng-dropdown-content>' +
-            '</ng-wormhole>',
-  styles: [`
-    :host { display: none; }
-    :host.render-in-place { display: block }
-  `],
+@Directive({
+  selector: 'ng-dropdown,[ngDropdown],[ng-dropdown]',
   host: {
-    '[class.render-in-place]': 'renderInPlace'
+    '[class.render-in-place]': 'renderInPlace',
+    '[class.ng-dropdown]': 'true',
   }
 })
-export class AngularDropdownComponent
-    implements AfterViewInit, OnDestroy, OnChanges {
+export class AngularDropdownDirective implements OnChanges {
   id: string;
 
   @Input()
   renderInPlace: boolean = false;
 
-  @Input()
-  triggerElement: Element = null;
+  @ContentChild(AngularDropdownControlDirective)
+  control: AngularDropdownControlDirective = null;
 
   hPosition: HorizontalPosition = null;
   vPosition: VerticalPosition = null;
@@ -92,46 +80,30 @@ export class AngularDropdownComponent
   @Input()
   beforeClose: () => boolean = null;
 
+  @Input('vertical-position')
+  public verticalPosition: VerticalPosition = 'auto';
+  @Input('horizontal-position')
+  public horizontalPosition: HorizontalPosition = 'auto';
+
   @Output('open')
   onOpen: EventEmitter<void> = new EventEmitter<void>();
 
   @Output('close')
   onClose: EventEmitter<void> = new EventEmitter<void>();
 
-  @ViewChild(AngularDropdownContentComponent)
+  get triggerElement(): Element {
+    return this.control.element.nativeElement;
+  }
+
+  @ContentChild(AngularDropdownContentComponent)
   private dropdownContent: AngularDropdownContentComponent;
 
   private uniqueId: number | string = null;
   private width: number = null;
 
-  constructor(
-      @Attribute('vertical-position')
-      public verticalPosition: VerticalPosition = 'auto',
-      @Attribute('horizontal-position')
-      public horizontalPosition: HorizontalPosition = 'auto',
-      private element: ElementRef,
-      @Attribute('id')
-      id?: string) {
+  constructor(@Attribute('id') id?: string) {
     this.initializeId(id);
     this.createDefaultWormholeOutlet();
-  }
-
-  triggerElementClickHandler = (): void => {
-    this.toggle();
-  }
-
-  ngAfterViewInit(): void {
-    this.triggerElement.addEventListener('click',
-      this.triggerElementClickHandler
-    );
-    this.triggerElement.setAttribute('aria-controls', this.id);
-  }
-
-  ngOnDestroy(): void {
-    this.triggerElement.removeEventListener('click',
-      this.triggerElementClickHandler
-    );
-    this.triggerElement.removeAttribute('aria-controls');
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -239,17 +211,17 @@ export class AngularDropdownComponent
     if (positions.style) {
       changes.top = `${positions.style.top}px`;
       // The component can be aligned from the right or from the left, but not from both.
-      if (positions.style.left !== undefined) {
+      if (positions.style.left != null) {
         changes.left = `${positions.style.left}px`;
         changes.right = null;
-      } else if (positions.style.right !== undefined) {
+      } else if (positions.style.right != null) {
         changes.right = `${positions.style.right}px`;
         changes.left = null;
       }
-      if (positions.style.width !== undefined) {
+      if (positions.style.width != null) {
         changes.width = `${positions.style.width}px`;
       }
-      if (this.top === null) {
+      if (this.top == null) {
         // Bypass on the first reposition only to avoid flickering.
         Object.keys(positions.style).forEach(k =>
           dropdown.style[k] = positions.style[k]

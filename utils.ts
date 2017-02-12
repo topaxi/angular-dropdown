@@ -1,5 +1,5 @@
 export function waitForAnimation(element: Element, callback: (e?: Event) => any): void {
-  window.requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
     let computedStyle = window.getComputedStyle(element);
 
     if (computedStyle.animationName !== 'none' &&

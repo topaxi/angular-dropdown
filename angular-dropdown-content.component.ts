@@ -1,16 +1,15 @@
 import {
   Component,
-  Attribute,
   Input,
-  ElementRef,
-  AfterViewInit,
-  OnChanges,
-  SimpleChanges,
+  Host,
+  Inject,
+  forwardRef,
+  AfterViewChecked,
   OnDestroy,
   NgZone
 } from '@angular/core';
 
-import { AngularDropdownComponent } from './angular-dropdown.component';
+import { AngularDropdownDirective } from './angular-dropdown.directive';
 import {
   closest,
   waitForAnimation
@@ -19,56 +18,71 @@ import {
 const MutationObserver = window.MutationObserver;
 
 @Component({
-  selector: 'ng-dropdown-content',
-  template: '<ng-content></ng-content>',
+  selector: 'ng-dropdown-content,[ng-dropdown-content],[ngDropdownContent]',
+  template: '<ng-wormhole *ngIf="dropdown.isOpen" to="#ng-dropdown-outlet" '+
+                '[renderInPlace]="dropdown.renderInPlace">' +
+              '<div *ngIf="overlay && dropdown.isOpen" ' +
+                  'class="ng-dropdown-overlay"></div>' +
+              '<div id="{{dropdown.dropdownId}}" ' +
+                  'class="ng-dropdown-content {{dropdownClass}}" ' +
+                  '[style.top]="dropdown.top" ' +
+                  '[style.right]="dropdown.right" ' +
+                  '[style.bottom]="dropdown.bottom" ' +
+                  '[style.left]="dropdown.left" ' +
+                  `[class.render-in-place]="dropdown.renderInPlace"` +
+                  `[class.ng-dropdown-content--above]="dropdown.vPosition === 'above'" ` +
+                  `[class.ng-dropdown-content--below]="dropdown.vPosition === 'below'" ` +
+                  `[class.ng-dropdown-content--right]="dropdown.hPosition === 'right'" ` +
+                  `[class.ng-dropdown-content--center]="dropdown.hPosition === 'center'" ` +
+                  `[class.ng-dropdown-content--left]="dropdown.hPosition === 'left'">` +
+                '<ng-content></ng-content>' +
+              '</div>' +
+            '</ng-wormhole>' +
+            '<div *ngIf="!dropdown.isOpen" id="{{dropdown.dropdownId}}" ' +
+                'class="ng-dropdown-placeholder"></div>',
+  styles: [`
+    :host { display: none; }
+    :host.render-in-place { display: block; position: absolute; }
+  `],
   host: {
-    '[style.top]': 'dropdown?.top',
-    '[style.right]': 'dropdown?.right',
-    '[style.bottom]': 'dropdown?.bottom',
-    '[style.left]': 'dropdown?.left',
-    '[class.render-in-place]': 'dropdown?.renderInPlace',
-    '[class.ng-dropdown-content--above]': 'dropdown?.vPosition === "above"',
-    '[class.ng-dropdown-content--below]': 'dropdown?.vPosition === "below"',
-    '[class.ng-dropdown-content--right]': 'dropdown?.hPosition === "right"',
-    '[class.ng-dropdown-content--center]': 'dropdown?.hPosition === "center"',
-    '[class.ng-dropdown-content--left]': 'dropdown?.hPosition === "left"',
+    '[class.render-in-place]': 'dropdown.renderInPlace',
   }
 })
 export class AngularDropdownContentComponent
-    implements AfterViewInit, OnChanges, OnDestroy {
+    implements AfterViewChecked, OnDestroy {
   @Input()
-  id: string;
-
-  @Input()
-  dropdown: AngularDropdownComponent;
-
-  @Input()
-  isOpen: boolean = false;
+  dropdownClass: string = '';
 
   private hasMoved: boolean = false;
   private _animationClass: string = null;
   private isTouchDevice: boolean = 'ontouchstart' in window;
   private mutationObserver: MutationObserver = null;
 
-  //@Attribute('transitioning-in-class')
-  private transitioningInClass = 'ng-dropdown--transitioning-in';
-  //@Attribute('transitioned-in-class')
-  private transitionedInClass = 'ng-dropdown--transitioned-in';
-  //@Attribute('transitioning-out-class')
-  private transitioningOutClass = 'ng-dropdown--transitioning-out';
+  private transitioningInClass = 'ng-dropdown-content--transitioning-in';
+  private transitionedInClass = 'ng-dropdown-content--transitioned-in';
+  private transitioningOutClass = 'ng-dropdown-content--transitioning-out';
+
+  private get dropdownElement(): HTMLElement {
+    return this.dropdown.dropdownElement;
+  }
+
+  private shouldOpen = false;
 
   constructor(
-    public element: ElementRef,
-    private zone: NgZone
-  ) {
+      @Host()
+      @Inject(forwardRef(() => AngularDropdownDirective))
+      public dropdown: AngularDropdownDirective,
+      private zone: NgZone) {
+    this.dropdown.onOpen.subscribe(() => this.shouldOpen = true);
+    this.dropdown.onClose.subscribe(() => this.close());
   }
 
   set animationClass(className: string) {
     if (this._animationClass && className !== this._animationClass) {
-      this.element.nativeElement.classList.remove(this._animationClass);
+      this.dropdownElement.classList.remove(this._animationClass);
     }
     else if (className) {
-      this.element.nativeElement.classList.add(className);
+      this.dropdownElement.classList.add(className);
     }
     this._animationClass = className;
   }
@@ -81,21 +95,11 @@ export class AngularDropdownContentComponent
     return this.dropdown.triggerElement;
   }
 
-  ngAfterViewInit(): void {
-    this.animationClass = this.transitioningInClass;
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['isOpen']) {
-      if (changes['isOpen'].isFirstChange()) {
-        this.element.nativeElement.id = this.id;
-      }
-      if (changes['isOpen'].currentValue) {
-        this.open()
-      }
-      else {
-        this.close();
-      }
+  ngAfterViewChecked() {
+    if (this.shouldOpen) {
+      this.animationClass = this.transitioningInClass;
+      requestAnimationFrame(() => this.open());
+      this.shouldOpen = false;
     }
   }
 
@@ -132,17 +136,17 @@ export class AngularDropdownContentComponent
     this.zone.run(() => this.dropdown.reposition());
 
   private animateIn(): void {
-    waitForAnimation(this.element.nativeElement, () => {
+    waitForAnimation(this.dropdownElement, () => {
       this.animationClass = this.transitionedInClass;
     });
   }
 
   private animateOut(): void {
     let parentElement = this.dropdown.renderInPlace ?
-      this.element.nativeElement.parentElement.parentElement :
-      this.element.nativeElement.parentElement;
-    let clone = this.element.nativeElement.cloneNode(true);
-    clone.id = `${this.element.nativeElement.id}--clone`;
+      this.dropdownElement.parentElement.parentElement :
+      this.dropdownElement.parentElement;
+    let clone = this.dropdownElement.cloneNode(true);
+    clone.id = `${this.dropdownElement.id}--clone`;
     clone.classList.remove(this.transitionedInClass);
     clone.classList.remove(this.transitioningInClass);
     clone.classList.add(this.transitioningOutClass);
@@ -152,7 +156,7 @@ export class AngularDropdownContentComponent
   }
 
   private handleRootMouseDown = (e: MouseEvent): void => {
-    if (this.hasMoved || this.element.nativeElement.contains(<Node>e.target) ||
+    if (this.hasMoved || this.dropdownElement.contains(<Node>e.target) ||
         this.triggerElement && this.triggerElement.contains(<Node>e.target)) {
       this.hasMoved = false;
       return;
@@ -181,14 +185,14 @@ export class AngularDropdownContentComponent
           this.repositionInZone();
         }
       });
-      this.mutationObserver.observe(this.element.nativeElement, {
+      this.mutationObserver.observe(this.dropdownElement, {
         childList: true,
         subtree: true
       });
     }
     else {
-      this.element.nativeElement.addEventListener('DOMNodeInserted', this.repositionInZone, false);
-      this.element.nativeElement.addEventListener('DOMNodeRemoved', this.repositionInZone, false);
+      this.dropdownElement.addEventListener('DOMNodeInserted', this.repositionInZone, false);
+      this.dropdownElement.addEventListener('DOMNodeRemoved', this.repositionInZone, false);
     }
   }
 
@@ -200,9 +204,9 @@ export class AngularDropdownContentComponent
       }
     }
     else {
-      if (this.element.nativeElement) {
-        this.element.nativeElement.removeEventListener('DOMNodeInserted', this.repositionInZone);
-        this.element.nativeElement.removeEventListener('DOMNodeRemoved', this.repositionInZone);
+      if (this.dropdownElement) {
+        this.dropdownElement.removeEventListener('DOMNodeInserted', this.repositionInZone);
+        this.dropdownElement.removeEventListener('DOMNodeRemoved', this.repositionInZone);
       }
     }
   }
