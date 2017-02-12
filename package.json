@@ -1,6 +1,6 @@
 {
   "name": "angular-dropdown",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Simple angular dropdown component.",
   "main": "angular-dropdown.module.ts",
   "scripts": {
