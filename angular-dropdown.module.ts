@@ -1,7 +1,7 @@
 import { NgModule }
   from '@angular/core';
-import { BrowserModule }
-  from '@angular/platform-browser';
+import { CommonModule }
+  from '@angular/common';
 
 import { AngularWormholeModule }
   from 'angular-wormhole';
@@ -15,7 +15,7 @@ import { AngularDropdownControlDirective }
 
 @NgModule({
   imports: [
-    BrowserModule,
+    CommonModule,
     AngularWormholeModule
   ],
   declarations: [

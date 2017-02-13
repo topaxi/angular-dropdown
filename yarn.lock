@@ -2,13 +2,13 @@
 # yarn lockfile v1
 
 
+"@angular/common@^2.0.0":
+  version "2.4.7"
+  resolved "https://registry.yarnpkg.com/@angular/common/-/common-2.4.7.tgz#9316daf90e353e67187d2e0afec5521c2001bd4b"
+
 "@angular/core@^2.0.0":
   version "2.4.5"
   resolved "https://registry.yarnpkg.com/@angular/core/-/core-2.4.5.tgz#8b05156398afde9636e65527ffb61fc74236af5a"
-
-"@angular/platform-browser@^2.0.0":
-  version "2.4.5"
-  resolved "https://registry.yarnpkg.com/@angular/platform-browser/-/platform-browser-2.4.5.tgz#fa1bc891b1309bca83845787b9a08db36a787fee"
 
 angular-wormhole@^1.1.0:
   version "1.1.0"
