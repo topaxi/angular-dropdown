@@ -20,10 +20,10 @@ function once(element: Node, eventName: string, listener: (e: Event) => any): vo
 }
 
 export const closest: (element: Element, selector: string) => Element
-  = window.Element && Element.prototype.closest ?
+  = (window as any).Element && Element.prototype.closest ?
     (el, s) => el.closest(s) :
     function closest(self: Element, s: string) {
-      let matches = (self.document || self.ownerDocument).querySelectorAll(s),
+      let matches = ((self as any).document || self.ownerDocument).querySelectorAll(s),
         i,
       el = self;
       do {

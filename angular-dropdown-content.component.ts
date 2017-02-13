@@ -15,7 +15,7 @@ import {
   waitForAnimation
 } from './utils';
 
-const MutationObserver = window.MutationObserver;
+const MutationObserver = (window as any).MutationObserver;
 
 @Component({
   selector: 'ng-dropdown-content,[ng-dropdown-content],[ngDropdownContent]',
@@ -148,7 +148,7 @@ export class AngularDropdownContentComponent
     let parentElement = this.dropdown.renderInPlace ?
       this.dropdownElement.parentElement.parentElement :
       this.dropdownElement.parentElement;
-    let clone = this.dropdownElement.cloneNode(true);
+    let clone = this.dropdownElement.cloneNode(true) as HTMLElement;
     clone.id = `${this.dropdownElement.id}--clone`;
     clone.classList.remove(this.transitionedInClass);
     clone.classList.remove(this.transitioningInClass);
@@ -171,7 +171,8 @@ export class AngularDropdownContentComponent
         `[aria-controls=${closestDropdown.getAttribute('id')}]`
       );
       let parentDropdown = closest(trigger, 'ng-dropdown-content');
-      if (parentDropdown && parentDropdown.getAttribute('id') === this.id) {
+      if (parentDropdown &&
+          parentDropdown.getAttribute('id') === this.dropdown.dropdownId) {
         this.hasMoved = false;
         return;
       }

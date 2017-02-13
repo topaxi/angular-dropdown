@@ -91,8 +91,12 @@ export class AngularDropdownDirective implements OnChanges {
   @Output('close')
   onClose: EventEmitter<void> = new EventEmitter<void>();
 
-  get triggerElement(): Element {
+  get triggerElement(): HTMLElement {
     return this.control.element.nativeElement;
+  }
+
+  get dropdownElement(): HTMLElement {
+    return document.getElementById(this.dropdownId);
   }
 
   @ContentChild(AngularDropdownContentComponent)
@@ -235,10 +239,6 @@ export class AngularDropdownDirective implements OnChanges {
     this.previousVerticalPosition = positions.verticalPosition;
 
     return changes;
-  }
-
-  private get dropdownElement(): HTMLElement {
-    return document.getElementById(this.dropdownId);
   }
 
   private initializeId(id?): void {
