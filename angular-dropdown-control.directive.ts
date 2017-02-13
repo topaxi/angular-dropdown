@@ -16,7 +16,8 @@ import { AngularDropdownDirective }
   host: {
     '[attr.aria-haspopup]': 'true',
     '[attr.aria-controls]': 'dropdown.id',
-    '[class.ng-dropdown-control]': 'true'
+    '[class.ng-dropdown-control]': 'true',
+    '[class.active]': 'dropdown.isOpen'
   }
 })
 export class AngularDropdownControlDirective {
