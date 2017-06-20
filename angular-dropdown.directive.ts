@@ -1,4 +1,8 @@
 import {
+  BehaviorSubject
+} from 'rxjs/BehaviorSubject';
+
+import {
   Component,
   Directive,
   Attribute,
@@ -34,6 +38,24 @@ function generateDropdownId() {
 export type VerticalPosition = 'auto' | 'above' | 'below';
 export type HorizontalPosition = 'auto' | 'right' | 'center' | 'left';
 
+export interface DropdownContentPosition {
+  readonly hPosition: HorizontalPosition | null;
+  readonly vPosition: VerticalPosition | null;
+  readonly top: string | null;
+  readonly left: string | null;
+  readonly bottom: string | null;
+  readonly right: string | null;
+}
+
+const EmptyDropdownContentPosition = Object.freeze({
+  vPosition: null,
+  hPosition: null,
+  top: null,
+  left: null,
+  bottom: null,
+  right: null
+});
+
 @Directive({
   selector: 'ng-dropdown,[ngDropdown],[ng-dropdown]',
   host: {
@@ -50,17 +72,12 @@ export class AngularDropdownDirective implements OnChanges {
   @ContentChild(AngularDropdownControlDirective)
   control: AngularDropdownControlDirective = null;
 
-  hPosition: HorizontalPosition = null;
-  vPosition: VerticalPosition = null;
   previousVerticalPosition: VerticalPosition = null;
   previousHorizontalPosition: HorizontalPosition = null;
   matchTriggerWidth: boolean = false;
 
-  isOpen: boolean = false;
-  top: number = null;
-  left: number = null;
-  bottom: number = null;
-  right: number = null;
+  isOpen$ = new BehaviorSubject(false);
+  position$ = new BehaviorSubject<Readonly<DropdownContentPosition>>(EmptyDropdownContentPosition);
 
   get dropdownId() {
     return `ng-dropdown-content-${this.uniqueId}`
@@ -119,7 +136,7 @@ export class AngularDropdownDirective implements OnChanges {
   }
 
   open(): void {
-    if (this.disabled || this.isOpen) {
+    if (this.disabled || this.isOpen$.getValue()) {
       return;
     }
 
@@ -128,11 +145,11 @@ export class AngularDropdownDirective implements OnChanges {
     }
 
     this.onOpen.emit();
-    this.isOpen = true;
+    this.isOpen$.next(true);
   }
 
   close(skipFocus = false): void {
-    if (this.disabled || !this.isOpen) {
+    if (this.disabled || !this.isOpen$.getValue()) {
       return;
     }
 
@@ -151,7 +168,7 @@ export class AngularDropdownDirective implements OnChanges {
       previousVerticalPosition: null,
       previousHorizontalPosition: null
     });
-    this.isOpen = false;
+    this.isOpen$.next(false);
     this.onClose.emit();
 
     if (!skipFocus) {
@@ -163,7 +180,7 @@ export class AngularDropdownDirective implements OnChanges {
   }
 
   toggle(): void {
-    if (this.isOpen) {
+    if (this.isOpen$.getValue()) {
       this.close();
     }
     else {
@@ -181,7 +198,7 @@ export class AngularDropdownDirective implements OnChanges {
   }
 
   reposition = (): AngularDropdownPositionChanges => {
-    if (!this.isOpen) {
+    if (!this.isOpen$.getValue()) {
       return;
     }
 
@@ -225,7 +242,7 @@ export class AngularDropdownDirective implements OnChanges {
       if (positions.style.width != null) {
         changes.width = `${positions.style.width}px`;
       }
-      if (this.top == null) {
+      if (this.position$.getValue().top == null) {
         // Bypass on the first reposition only to avoid flickering.
         Object.keys(positions.style).forEach(k =>
           dropdown.style[k] = positions.style[k]
@@ -233,7 +250,7 @@ export class AngularDropdownDirective implements OnChanges {
       }
     }
 
-    Object.assign(this, changes);
+    this.position$.next(changes);
 
     this.previousHorizontalPosition = positions.horizontalPosition;
     this.previousVerticalPosition = positions.verticalPosition;

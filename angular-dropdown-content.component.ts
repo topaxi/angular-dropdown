@@ -19,26 +19,26 @@ const MutationObserver = (window as any).MutationObserver;
 
 @Component({
   selector: 'ng-dropdown-content,[ng-dropdown-content],[ngDropdownContent]',
-  template: '<ng-wormhole *ngIf="dropdown.isOpen" to="#ng-dropdown-outlet" '+
+  template: '<ng-wormhole *ngIf="dropdown.isOpen$ | async" to="#ng-dropdown-outlet" '+
                 '[renderInPlace]="dropdown.renderInPlace">' +
-              '<div *ngIf="overlay && dropdown.isOpen" ' +
+              '<div *ngIf="overlay && (dropdown.isOpen$ | async)" ' +
                   'class="ng-dropdown-overlay"></div>' +
               '<div id="{{dropdown.dropdownId}}" ' +
                   'class="ng-dropdown-content {{dropdownClass}}" ' +
-                  '[style.top]="dropdown.top" ' +
-                  '[style.right]="dropdown.right" ' +
-                  '[style.bottom]="dropdown.bottom" ' +
-                  '[style.left]="dropdown.left" ' +
+                  '[style.top]="(dropdown.position$ | async).top" ' +
+                  '[style.right]="(dropdown.position$ | async).right" ' +
+                  '[style.bottom]="(dropdown.position$ | async).bottom" ' +
+                  '[style.left]="(dropdown.position$ | async).left" ' +
                   `[class.render-in-place]="dropdown.renderInPlace"` +
-                  `[class.ng-dropdown-content--above]="dropdown.vPosition === 'above'" ` +
-                  `[class.ng-dropdown-content--below]="dropdown.vPosition === 'below'" ` +
-                  `[class.ng-dropdown-content--right]="dropdown.hPosition === 'right'" ` +
-                  `[class.ng-dropdown-content--center]="dropdown.hPosition === 'center'" ` +
-                  `[class.ng-dropdown-content--left]="dropdown.hPosition === 'left'">` +
+                  `[class.ng-dropdown-content--above]="(dropdown.position$ | async).vPosition === 'above'" ` +
+                  `[class.ng-dropdown-content--below]="(dropdown.position$ | async).vPosition === 'below'" ` +
+                  `[class.ng-dropdown-content--right]="(dropdown.position$ | async).hPosition === 'right'" ` +
+                  `[class.ng-dropdown-content--center]="(dropdown.position$ | async).hPosition === 'center'" ` +
+                  `[class.ng-dropdown-content--left]="(dropdown.position$ | async).hPosition === 'left'">` +
                 '<ng-content></ng-content>' +
               '</div>' +
             '</ng-wormhole>' +
-            '<div *ngIf="!dropdown.isOpen" id="{{dropdown.dropdownId}}" ' +
+            '<div *ngIf="!dropdown.isOpen$ | async" id="{{dropdown.dropdownId}}" ' +
                 'class="ng-dropdown-placeholder"></div>',
   styles: [`
     :host { display: none; }
