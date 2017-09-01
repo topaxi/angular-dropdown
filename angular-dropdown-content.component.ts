@@ -54,9 +54,9 @@ export class AngularDropdownContentComponent
   dropdownClass: string = '';
 
   private hasMoved: boolean = false;
-  private _animationClass: string = null;
+  private _animationClass: string | null = null;
   private isTouchDevice: boolean = 'ontouchstart' in window;
-  private mutationObserver: MutationObserver = null;
+  private mutationObserver: MutationObserver | null = null;
 
   @Input()
   transitioningInClass: string = 'ng-dropdown-content--transitioning-in';
@@ -80,7 +80,7 @@ export class AngularDropdownContentComponent
     this.dropdown.onClose.subscribe(() => this.close());
   }
 
-  set animationClass(className: string) {
+  set animationClass(className: string | null) {
     if (this._animationClass && className !== this._animationClass) {
       this.dropdownElement.classList.remove(this._animationClass);
     }
@@ -90,7 +90,7 @@ export class AngularDropdownContentComponent
     this._animationClass = className;
   }
 
-  get animationClass(): string {
+  get animationClass(): string | null {
     return this._animationClass;
   }
 
@@ -123,7 +123,7 @@ export class AngularDropdownContentComponent
       this.addGlobalEvents();
       this.startObservingDomMutations();
     }
-    else if (changes.vPosition === 'above') {
+    else if (changes !== null && changes.vPosition === 'above') {
       this.startObservingDomMutations();
     }
 
@@ -146,16 +146,16 @@ export class AngularDropdownContentComponent
 
   private animateOut(): void {
     let parentElement = this.dropdown.renderInPlace ?
-      this.dropdownElement.parentElement.parentElement :
+      this.dropdownElement.parentElement!.parentElement :
       this.dropdownElement.parentElement;
     let clone = this.dropdownElement.cloneNode(true) as HTMLElement;
     clone.id = `${this.dropdownElement.id}--clone`;
     clone.classList.remove(this.transitionedInClass);
     clone.classList.remove(this.transitioningInClass);
     clone.classList.add(this.transitioningOutClass);
-    parentElement.appendChild(clone);
+    parentElement!.appendChild(clone);
     this.animationClass = this.transitioningInClass;
-    waitForAnimation(clone, () => parentElement.removeChild(clone));
+    waitForAnimation(clone, () => parentElement!.removeChild(clone));
   }
 
   private handleRootMouseDown = (e: MouseEvent): void => {
@@ -170,7 +170,7 @@ export class AngularDropdownContentComponent
       let trigger = document.querySelector(
         `[aria-controls=${closestDropdown.getAttribute('id')}]`
       );
-      let parentDropdown = closest(trigger, 'ng-dropdown-content');
+      let parentDropdown = closest(trigger!, 'ng-dropdown-content');
       if (parentDropdown &&
           parentDropdown.getAttribute('id') === this.dropdown.dropdownId) {
         this.hasMoved = false;
@@ -189,7 +189,7 @@ export class AngularDropdownContentComponent
           this.repositionInZone();
         }
       });
-      this.mutationObserver.observe(this.dropdownElement, {
+      this.mutationObserver!.observe(this.dropdownElement, {
         childList: true,
         subtree: true
       });

@@ -19,7 +19,7 @@ function once(element: Node, eventName: string, listener: (e: Event) => any): vo
   });
 }
 
-export const closest: (element: Element, selector: string) => Element
+export const closest: (element: Element, selector: string) => Element | null
   = (window as any).Element && Element.prototype.closest ?
     (el, s) => el.closest(s) :
     function closest(self: Element, s: string) {
@@ -29,7 +29,7 @@ export const closest: (element: Element, selector: string) => Element
       do {
         i = matches.length;
         while (--i >= 0 && matches.item(i) !== el) {};
-      } while ((i < 0) && (el = el.parentElement));
+      } while ((i < 0) && (el = el.parentElement!));
       return el;
     };
 

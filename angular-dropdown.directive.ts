@@ -70,10 +70,10 @@ export class AngularDropdownDirective implements OnChanges {
   renderInPlace: boolean = false;
 
   @ContentChild(AngularDropdownControlDirective)
-  control: AngularDropdownControlDirective = null;
+  control: AngularDropdownControlDirective | null = null;
 
-  previousVerticalPosition: VerticalPosition = null;
-  previousHorizontalPosition: HorizontalPosition = null;
+  previousVerticalPosition: VerticalPosition | null = null;
+  previousHorizontalPosition: HorizontalPosition | null = null;
   matchTriggerWidth: boolean = false;
 
   isOpen$ = new BehaviorSubject(false);
@@ -92,10 +92,10 @@ export class AngularDropdownDirective implements OnChanges {
   disabled: boolean = false;
 
   @Input()
-  beforeOpen: () => boolean = null;
+  beforeOpen: (() => boolean) | null= null;
 
   @Input()
-  beforeClose: () => boolean = null;
+  beforeClose: (() => boolean) | null = null;
 
   @Input()
   public verticalPosition: VerticalPosition = 'auto';
@@ -109,18 +109,18 @@ export class AngularDropdownDirective implements OnChanges {
   onClose: EventEmitter<void> = new EventEmitter<void>();
 
   get triggerElement(): HTMLElement {
-    return this.control.element.nativeElement;
+    return this.control!.element.nativeElement;
   }
 
   get dropdownElement(): HTMLElement {
-    return document.getElementById(this.dropdownId);
+    return document.getElementById(this.dropdownId)!;
   }
 
   @ContentChild(AngularDropdownContentComponent)
   private dropdownContent: AngularDropdownContentComponent;
 
-  private uniqueId: number | string = null;
-  private width: number = null;
+  private uniqueId: number | string | null = null;
+  private width: number | null = null;
 
   constructor(@Attribute('id') id?: string) {
     this.initializeId(id);
@@ -197,14 +197,14 @@ export class AngularDropdownDirective implements OnChanges {
     this.disabled = false;
   }
 
-  reposition = (): AngularDropdownPositionChanges => {
+  reposition = (): AngularDropdownPositionChanges | null => {
     if (!this.isOpen$.getValue()) {
-      return;
+      return null;
     }
 
     let dropdownElement = this.dropdownElement;
     if (!dropdownElement || !this.triggerElement) {
-      return;
+      return null;
     }
 
     let calculatePosition = this.renderInPlace ?
