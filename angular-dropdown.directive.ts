@@ -224,7 +224,7 @@ export class AngularDropdownDirective implements OnChanges {
     return this.applyReposition(this.triggerElement, dropdownElement, positionData);
   }
 
-  private applyReposition(trigger: Element, dropdown: HTMLElement, positions): AngularDropdownPositionChanges {
+  private applyReposition(trigger: Element, dropdown: HTMLElement, positions: any): AngularDropdownPositionChanges {
     let changes: any = {
       hPosition: positions.horizontalPosition,
       vPosition: positions.verticalPosition
@@ -245,7 +245,7 @@ export class AngularDropdownDirective implements OnChanges {
       if (this.position$.getValue().top == null) {
         // Bypass on the first reposition only to avoid flickering.
         Object.keys(positions.style).forEach(k =>
-          dropdown.style[k] = positions.style[k]
+          dropdown.style[k as any] = positions.style[k]
         )
       }
     }
@@ -258,7 +258,7 @@ export class AngularDropdownDirective implements OnChanges {
     return changes;
   }
 
-  private initializeId(id?): void {
+  private initializeId(id?: string): void {
     if (id) {
       this.id = this.uniqueId = id;
     }

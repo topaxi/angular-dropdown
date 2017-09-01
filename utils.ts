@@ -36,7 +36,7 @@ export const closest: (element: Element, selector: string) => Element | null
 export function calculatePosition(
   trigger: Element,
   dropdown: Element,
-  { horizontalPosition, verticalPosition, matchTriggerWidth, previousHorizontalPosition, previousVerticalPosition }) {
+  { horizontalPosition, verticalPosition, matchTriggerWidth, previousHorizontalPosition, previousVerticalPosition }: any): any {
   // Collect information about all the involved DOM elements
   let scroll = { left: window.pageXOffset, top: window.pageYOffset };
   let {
@@ -116,7 +116,7 @@ export function calculatePosition(
 export function calculateInPlacePosition(
     trigger: Element,
     dropdown: Element,
-    { horizontalPosition, verticalPosition }) {
+    { horizontalPosition, verticalPosition }: any) {
   let dropdownRect;
   let positionData: any = {};
 

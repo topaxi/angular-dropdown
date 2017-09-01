@@ -1,6 +1,6 @@
 {
   "name": "angular-dropdown",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Simple angular dropdown component.",
   "main": "angular-dropdown.module.ts",
   "scripts": {
@@ -24,15 +24,15 @@
     "angular-wormhole": "^1.1.0"
   },
   "peerDependencies": {
-    "@angular/core": "^2 || ^4",
     "@angular/common": "^2 || ^4",
+    "@angular/core": "^2 || ^4",
     "angular-wormhole": "^1.1.0",
     "typescript": "^2.0.0"
   },
   "devDependencies": {
-    "@angular/core": "^2 || ^4",
     "@angular/common": "^2 || ^4",
+    "@angular/core": "^2 || ^4",
     "angular-wormhole": "^1.1.0",
-    "typescript": "^2.0.0"
+    "typescript": "^2.5.2"
   }
 }

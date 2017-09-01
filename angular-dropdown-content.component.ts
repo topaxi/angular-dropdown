@@ -183,7 +183,7 @@ export class AngularDropdownContentComponent
 
   private startObservingDomMutations(): void {
     if (MutationObserver) {
-      this.mutationObserver = new MutationObserver(mutations => {
+      this.mutationObserver = new MutationObserver((mutations: any) => {
         if (mutations[0].addedNodes.length ||
             mutations[0].removedNodes.length) {
           this.repositionInZone();
