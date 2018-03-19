@@ -1,5 +1,5 @@
 import { Subject } from 'rxjs/Subject';
-import { takeUntil } from 'rxjs/operators/takeUntil';
+import 'rxjs/add/operator/takeUntil';
 
 import {
   Component,
@@ -81,11 +81,11 @@ export class AngularDropdownContentComponent
       public dropdown: AngularDropdownDirective,
       private zone: NgZone) {
     this.dropdown.onOpen
-      .pipe(takeUntil(this.destroy$))
+      .takeUntil(this.destroy$)
       .subscribe(() => this.shouldOpen = true);
 
     this.dropdown.onClose
-      .pipe(takeUntil(this.destroy$))
+      .takeUntil(this.destroy$)
       .subscribe(() => this.close());
   }
 
@@ -246,6 +246,7 @@ export class AngularDropdownContentComponent
   }
 
   private teardown() {
+    this.destroy$.next();
     this.removeGlobalEvents();
     this.stopObservingDomMutations();
     document.body.removeEventListener('mousedown', this.handleRootMouseDown, true);
