@@ -1,3 +1,6 @@
+import { Subject } from 'rxjs/Subject';
+import { takeUntil } from 'rxjs/operators/takeUntil';
+
 import {
   Component,
   Input,
@@ -57,6 +60,7 @@ export class AngularDropdownContentComponent
   private _animationClass: string | null = null;
   private isTouchDevice: boolean = 'ontouchstart' in window;
   private mutationObserver: MutationObserver | null = null;
+  private destroy$ = new Subject<void>();
 
   @Input()
   transitioningInClass: string = 'ng-dropdown-content--transitioning-in';
@@ -76,8 +80,13 @@ export class AngularDropdownContentComponent
       @Inject(forwardRef(() => AngularDropdownDirective))
       public dropdown: AngularDropdownDirective,
       private zone: NgZone) {
-    this.dropdown.onOpen.subscribe(() => this.shouldOpen = true);
-    this.dropdown.onClose.subscribe(() => this.close());
+    this.dropdown.onOpen
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.shouldOpen = true);
+
+    this.dropdown.onClose
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.close());
   }
 
   set animationClass(className: string | null) {
@@ -158,7 +167,7 @@ export class AngularDropdownContentComponent
     waitForAnimation(clone, () => parentElement!.removeChild(clone));
   }
 
-  private handleRootMouseDown = (e: MouseEvent): void => {
+  private handleRootMouseDown = (e: Event): void => {
     if (this.hasMoved || this.dropdownElement.contains(<Node>e.target) ||
         this.triggerElement && this.triggerElement.contains(<Node>e.target)) {
       this.hasMoved = false;

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0
+
+Properly unsubscribe on destroy
+
 ## 0.2.1
 
 Allow compiling with typescript `strict` option

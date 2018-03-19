@@ -64,7 +64,7 @@ const EmptyDropdownContentPosition = Object.freeze({
   }
 })
 export class AngularDropdownDirective implements OnChanges {
-  id: string;
+  id?: string;
 
   @Input()
   renderInPlace: boolean = false;
@@ -117,7 +117,7 @@ export class AngularDropdownDirective implements OnChanges {
   }
 
   @ContentChild(AngularDropdownContentComponent)
-  private dropdownContent: AngularDropdownContentComponent;
+  private dropdownContent?: AngularDropdownContentComponent;
 
   private uniqueId: number | string | null = null;
   private width: number | null = null;
