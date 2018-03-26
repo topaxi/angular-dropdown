@@ -1,6 +1,9 @@
+import { Observable } from 'rxjs/Observable';
 import {
   BehaviorSubject
 } from 'rxjs/BehaviorSubject';
+import 'rxjs/add/operator/filter';
+import 'rxjs/add/operator/mapTo';
 
 import {
   Component,
@@ -103,10 +106,16 @@ export class AngularDropdownDirective implements OnChanges {
   public horizontalPosition: HorizontalPosition = 'auto';
 
   @Output('open')
-  onOpen: EventEmitter<void> = new EventEmitter<void>();
+  onOpen: Observable<void> =
+    this.isOpen$
+      .filter(isOpen => isOpen === true)
+      .mapTo(void 0);
 
   @Output('close')
-  onClose: EventEmitter<void> = new EventEmitter<void>();
+  onClose: Observable<void> =
+    this.isOpen$
+      .filter(isOpen => isOpen === false)
+      .mapTo(void 0);
 
   get triggerElement(): HTMLElement {
     return this.control!.element.nativeElement;
@@ -144,7 +153,6 @@ export class AngularDropdownDirective implements OnChanges {
       return;
     }
 
-    this.onOpen.emit();
     this.isOpen$.next(true);
   }
 
@@ -169,7 +177,6 @@ export class AngularDropdownDirective implements OnChanges {
       previousHorizontalPosition: null
     });
     this.isOpen$.next(false);
-    this.onClose.emit();
 
     if (!skipFocus) {
       if (this.triggerElement instanceof HTMLElement &&

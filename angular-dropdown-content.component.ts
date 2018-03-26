@@ -8,6 +8,7 @@ import {
   Inject,
   forwardRef,
   AfterViewChecked,
+  OnInit,
   OnDestroy,
   NgZone
 } from '@angular/core';
@@ -52,7 +53,7 @@ const MutationObserver = (window as any).MutationObserver;
   }
 })
 export class AngularDropdownContentComponent
-    implements AfterViewChecked, OnDestroy {
+    implements OnInit, AfterViewChecked, OnDestroy {
   @Input()
   dropdownClass: string = '';
 
@@ -80,6 +81,9 @@ export class AngularDropdownContentComponent
       @Inject(forwardRef(() => AngularDropdownDirective))
       public dropdown: AngularDropdownDirective,
       private zone: NgZone) {
+  }
+
+  ngOnInit(): void {
     this.dropdown.onOpen
       .takeUntil(this.destroy$)
       .subscribe(() => this.shouldOpen = true);
@@ -116,7 +120,8 @@ export class AngularDropdownContentComponent
   }
 
   ngOnDestroy(): void {
-    this.teardown();
+    this.destroy$.next();
+    this.teardownEvents();
   }
 
   open(): void {
@@ -140,7 +145,7 @@ export class AngularDropdownContentComponent
   }
 
   close(): void {
-    this.teardown();
+    this.teardownEvents();
     this.animateOut();
   }
 
@@ -245,8 +250,7 @@ export class AngularDropdownContentComponent
     document.body.removeEventListener('touchmove', this.touchMoveHandler, true);
   }
 
-  private teardown() {
-    this.destroy$.next();
+  private teardownEvents() {
     this.removeGlobalEvents();
     this.stopObservingDomMutations();
     document.body.removeEventListener('mousedown', this.handleRootMouseDown, true);
