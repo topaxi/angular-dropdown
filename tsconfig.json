@@ -6,7 +6,12 @@
     "experimentalDecorators": true,
     "sourceMap": true,
     "declaration": true,
-    "strict": true
+    "strict": true,
+    "lib": [
+      "dom",
+      "es5",
+      "es6"
+    ]
   },
   "exclude": ["node_modules"]
 }

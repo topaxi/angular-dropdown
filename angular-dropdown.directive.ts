@@ -1,9 +1,6 @@
-import { Observable } from 'rxjs/Observable';
 import {
   BehaviorSubject
 } from 'rxjs/BehaviorSubject';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/mapTo';
 
 import {
   Component,
@@ -106,16 +103,10 @@ export class AngularDropdownDirective implements OnChanges {
   public horizontalPosition: HorizontalPosition = 'auto';
 
   @Output('open')
-  onOpen: Observable<void> =
-    this.isOpen$
-      .filter(isOpen => isOpen === true)
-      .mapTo(void 0);
+  onOpen = new EventEmitter<void>();
 
   @Output('close')
-  onClose: Observable<void> =
-    this.isOpen$
-      .filter(isOpen => isOpen === false)
-      .mapTo(void 0);
+  onClose = new EventEmitter<void>();
 
   get triggerElement(): HTMLElement {
     return this.control!.element.nativeElement;
@@ -136,10 +127,11 @@ export class AngularDropdownDirective implements OnChanges {
     this.createDefaultWormholeOutlet();
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['disabled'] &&
-        changes['disabled'].currentValue === true &&
-        changes['disabled'].previousValue !== true) {
+  ngOnChanges({ disabled }: SimpleChanges): void {
+    if (disabled &&
+        disabled.firstChange === false &&
+        disabled.currentValue === true &&
+        disabled.previousValue !== true) {
       this.disable();
     }
   }
@@ -154,6 +146,7 @@ export class AngularDropdownDirective implements OnChanges {
     }
 
     this.isOpen$.next(true);
+    this.onOpen.emit();
   }
 
   close(skipFocus = false): void {
@@ -177,6 +170,7 @@ export class AngularDropdownDirective implements OnChanges {
       previousHorizontalPosition: null
     });
     this.isOpen$.next(false);
+    this.onClose.emit();
 
     if (!skipFocus) {
       if (this.triggerElement instanceof HTMLElement &&

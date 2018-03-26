@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.3
+
+Don't emit close on initialization
+
 ## 0.3.2
 
 Don't emit destroy on dropdown close
