@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.4
+
+Add `index.ts` entry point for better module discovery #1
+
 ## 0.3.3
 
 Don't emit close on initialization

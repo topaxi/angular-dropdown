@@ -12,7 +12,7 @@ Import `AngularDropdownModule` in your app:
 
 ```typescript
 import { NgModule } from '@angular/core';
-import { AngularDropdownModule } from 'angular-wormhole';
+import { AngularDropdownModule } from 'angular-dropdown';
 
 @NgModule({
   imports: [

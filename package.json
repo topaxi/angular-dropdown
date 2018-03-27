@@ -1,8 +1,8 @@
 {
   "name": "angular-dropdown",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Simple angular dropdown component.",
-  "main": "angular-dropdown.module.ts",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
