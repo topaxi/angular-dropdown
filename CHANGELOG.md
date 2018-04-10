@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.5
+
+Relax event handler arg type
+
 ## 0.3.4
 
 Add `index.ts` entry point for better module discovery #1

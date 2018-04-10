@@ -241,11 +241,11 @@ export class AngularDropdownContentComponent
     window.removeEventListener('orientationchange', this.repositionInZone);
   }
 
-  private touchStartHandler = (e: TouchEvent) => {
+  private touchStartHandler = (e: Event) => {
     document.body.addEventListener('touchmove', this.touchMoveHandler, true);
   }
 
-  private touchMoveHandler = (e: TouchEvent) => {
+  private touchMoveHandler = (e: Event) => {
     this.hasMoved = true;
     document.body.removeEventListener('touchmove', this.touchMoveHandler, true);
   }
