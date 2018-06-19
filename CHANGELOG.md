@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0
+
+Allow returning boolean observables from beforeOpen and beforeClose hooks
+
 ## 0.3.5
 
 Relax event handler arg type
