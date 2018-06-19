@@ -24,6 +24,7 @@ import { AngularDropdownContentComponent }
   from './angular-dropdown-content.component';
 
 import { calculatePosition, calculateInPlacePosition } from './utils';
+import { Observable } from 'rxjs/Observable';
 
 export interface AngularDropdownPositionChanges {
   vPosition: 'above' | 'below';
@@ -92,7 +93,7 @@ export class AngularDropdownDirective implements OnChanges {
   disabled: boolean = false;
 
   @Input()
-  beforeOpen: (() => boolean) | null= null;
+  beforeOpen: (() => boolean) | (() => Observable<boolean>)  | null= null;
 
   @Input()
   beforeClose: (() => boolean) | null = null;
@@ -141,12 +142,25 @@ export class AngularDropdownDirective implements OnChanges {
       return;
     }
 
-    if (this.beforeOpen && this.beforeOpen() === false) {
-      return;
+    let open$: Observable<boolean> = Observable.of(true);
+
+    if (this.beforeOpen) {
+      const result = this.beforeOpen();
+      if (result instanceof Observable) {
+        open$ = result;
+      } else {
+        open$ = Observable.of(result);
+      }
+
     }
 
-    this.isOpen$.next(true);
-    this.onOpen.emit();
+    open$.subscribe( (open) => {
+      if (open) {
+        this.isOpen$.next(true);
+        this.onOpen.emit();
+      }
+    });
+
   }
 
   close(skipFocus = false): void {
