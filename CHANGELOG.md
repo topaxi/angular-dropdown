@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1
+
+DropdownDirective isOpen$ is no longer a BehaviorSubject
+
 ## 0.4.0
 
 Allow returning boolean observables from beforeOpen and beforeClose hooks
