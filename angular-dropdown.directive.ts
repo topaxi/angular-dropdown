@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import 'rxjs/add/observable/of';
+import 'rxjs/add/operator/skip';
 import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/filter';
 
@@ -75,7 +76,9 @@ export class AngularDropdownDirective implements OnChanges {
   previousHorizontalPosition: HorizontalPosition | null = null;
   matchTriggerWidth: boolean = false;
 
-  isOpen$ = new BehaviorSubject(false);
+  private _isOpen$ = new BehaviorSubject(false);
+  isOpen$ = this._isOpen$.skip(1);
+
   position$ = new BehaviorSubject<Readonly<DropdownContentPosition>>(
     EmptyDropdownContentPosition
   );
@@ -131,7 +134,7 @@ export class AngularDropdownDirective implements OnChanges {
   }
 
   open(): void {
-    if (this.disabled || this.isOpen$.getValue()) {
+    if (this.disabled || this._isOpen$.getValue()) {
       return;
     }
 
@@ -145,11 +148,11 @@ export class AngularDropdownDirective implements OnChanges {
     open$
       .first()
       .filter(open => open === true)
-      .subscribe(() => this.isOpen$.next(true));
+      .subscribe(() => this._isOpen$.next(true));
   }
 
   close(skipFocus = false): void {
-    if (this.disabled || !this.isOpen$.getValue()) {
+    if (this.disabled || !this._isOpen$.getValue()) {
       return;
     }
 
@@ -175,7 +178,7 @@ export class AngularDropdownDirective implements OnChanges {
           previousVerticalPosition: null,
           previousHorizontalPosition: null
         });
-        this.isOpen$.next(false);
+        this._isOpen$.next(false);
 
         if (!skipFocus) {
           if (
@@ -189,7 +192,7 @@ export class AngularDropdownDirective implements OnChanges {
   }
 
   toggle(): void {
-    if (this.isOpen$.getValue()) {
+    if (this._isOpen$.getValue()) {
       this.close();
     } else {
       this.open();
@@ -206,7 +209,7 @@ export class AngularDropdownDirective implements OnChanges {
   }
 
   reposition = (): AngularDropdownPositionChanges | null => {
-    if (!this.isOpen$.getValue()) {
+    if (!this._isOpen$.getValue()) {
       return null;
     }
 
