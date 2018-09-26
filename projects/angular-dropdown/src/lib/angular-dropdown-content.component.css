@@ -1,0 +1,7 @@
+:host {
+  display: none;
+}
+:host.render-in-place {
+  display: block;
+  position: absolute;
+}

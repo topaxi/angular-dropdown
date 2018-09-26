@@ -1,14 +1,11 @@
-import { Observable } from 'rxjs/Observable';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/operator/skip';
-import 'rxjs/add/operator/first';
-import 'rxjs/add/operator/filter';
+import { Observable, BehaviorSubject, of } from 'rxjs';
+import { skip, first, filter } from 'rxjs/operators';
 
 import {
   Component,
   Directive,
   Attribute,
+  Inject,
   Input,
   Output,
   ElementRef,
@@ -18,8 +15,11 @@ import {
   SimpleChanges,
   EventEmitter,
   QueryList,
-  ViewContainerRef
+  ViewContainerRef,
+  forwardRef
 } from '@angular/core';
+
+import { DOCUMENT } from '@angular/common';
 
 import { AngularDropdownControlDirective } from './angular-dropdown-control.directive';
 import { AngularDropdownContentComponent } from './angular-dropdown-content.component';
@@ -67,17 +67,18 @@ const EmptyDropdownContentPosition = Object.freeze({
 export class AngularDropdownDirective implements OnChanges {
   id?: string;
 
-  @Input() renderInPlace: boolean = false;
+  @Input()
+  renderInPlace = false;
 
   @ContentChild(AngularDropdownControlDirective)
   control: AngularDropdownControlDirective | null = null;
 
   previousVerticalPosition: VerticalPosition | null = null;
   previousHorizontalPosition: HorizontalPosition | null = null;
-  matchTriggerWidth: boolean = false;
+  matchTriggerWidth = false;
 
   private _isOpen$ = new BehaviorSubject(false);
-  isOpen$ = this._isOpen$.skip(1);
+  isOpen$ = this._isOpen$.pipe(skip(1));
 
   position$ = new BehaviorSubject<Readonly<DropdownContentPosition>>(
     EmptyDropdownContentPosition
@@ -87,37 +88,48 @@ export class AngularDropdownDirective implements OnChanges {
     return `ng-dropdown-content-${this.uniqueId}`;
   }
 
-  @Input() calculatePosition: Function = calculatePosition;
-  @Input() calculateInPlacePosition: Function = calculateInPlacePosition;
+  @Input()
+  calculatePosition: Function = calculatePosition;
+  @Input()
+  calculateInPlacePosition: Function = calculateInPlacePosition;
 
-  @Input() disabled: boolean = false;
+  @Input()
+  disabled = false;
 
-  @Input() beforeOpen: (() => boolean | Observable<boolean>) | null = null;
+  @Input()
+  beforeOpen: (() => boolean | Observable<boolean>) | null = null;
 
-  @Input() beforeClose: (() => boolean | Observable<boolean>) | null = null;
+  @Input()
+  beforeClose: (() => boolean | Observable<boolean>) | null = null;
 
-  @Input() public verticalPosition: VerticalPosition = 'auto';
-  @Input() public horizontalPosition: HorizontalPosition = 'auto';
+  @Input()
+  public verticalPosition: VerticalPosition = 'auto';
+  @Input()
+  public horizontalPosition: HorizontalPosition = 'auto';
 
-  @Output('open') onOpen = this.isOpen$.filter(open => open === true);
+  @Output('open')
+  onOpen = this.isOpen$.pipe(filter(open => open === true));
 
-  @Output('close') onClose = this.isOpen$.filter(open => open === false);
+  @Output('close')
+  onClose = this.isOpen$.pipe(filter(open => open === false));
 
   get triggerElement(): HTMLElement {
     return this.control!.element.nativeElement;
   }
 
   get dropdownElement(): HTMLElement {
-    return document.getElementById(this.dropdownId)!;
+    return this.document.getElementById(this.dropdownId)!;
   }
 
-  @ContentChild(AngularDropdownContentComponent)
+  @ContentChild(forwardRef(() => AngularDropdownContentComponent))
   private dropdownContent?: AngularDropdownContentComponent;
 
   private uniqueId: number | string | null = null;
   private width: number | null = null;
+  private document: Document;
 
-  constructor(@Attribute('id') id?: string) {
+  constructor(@Inject(DOCUMENT) document: any, @Attribute('id') id?: string) {
+    this.document = document;
     this.initializeId(id);
     this.createDefaultWormholeOutlet();
   }
@@ -138,16 +150,18 @@ export class AngularDropdownDirective implements OnChanges {
       return;
     }
 
-    let open$ = Observable.of(true);
+    let open$ = of(true);
 
     if (this.beforeOpen) {
       const result = this.beforeOpen();
-      open$ = result instanceof Observable ? result : Observable.of(result);
+      open$ = result instanceof Observable ? result : of(result);
     }
 
     open$
-      .first()
-      .filter(open => open === true)
+      .pipe(
+        first(),
+        filter(open => open === true)
+      )
       .subscribe(() => this._isOpen$.next(true));
   }
 
@@ -156,16 +170,18 @@ export class AngularDropdownDirective implements OnChanges {
       return;
     }
 
-    let close$ = Observable.of(true);
+    let close$ = of(true);
 
     if (this.beforeClose) {
       const result = this.beforeClose();
-      close$ = result instanceof Observable ? result : Observable.of(result);
+      close$ = result instanceof Observable ? result : of(result);
     }
 
     close$
-      .first()
-      .filter(close => close === true)
+      .pipe(
+        first(),
+        filter(close => close === true)
+      )
       .subscribe(() => {
         Object.assign(this, {
           hPosition: null,
@@ -291,10 +307,10 @@ export class AngularDropdownDirective implements OnChanges {
   }
 
   private createDefaultWormholeOutlet(): void {
-    if (!document.getElementById('ng-dropdown-outlet')) {
-      let outlet = document.createElement('div');
+    if (!this.document.getElementById('ng-dropdown-outlet')) {
+      let outlet = this.document.createElement('div');
       outlet.id = 'ng-dropdown-outlet';
-      document.body.insertBefore(outlet, document.body.firstChild);
+      this.document.body.insertBefore(outlet, this.document.body.firstChild);
     }
   }
 }

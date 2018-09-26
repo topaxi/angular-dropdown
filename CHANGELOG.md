@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.0
+
+Update dependencies and use ng-packagr
+
 ## 0.4.1
 
 DropdownDirective isOpen$ is no longer a BehaviorSubject

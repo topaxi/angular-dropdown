@@ -1,0 +1,22 @@
+{
+  "name": "angular-dropdown",
+  "version": "0.5.0",
+  "description": "Simple angular dropdown component.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/topaxi/angular-dropdown.git"
+  },
+  "keywords": ["angular", "ng", "ngx", "dropdown"],
+  "author": "Damian Senn <damian.senn@topaxi.codes>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/topaxi/angular-dropdown/issues"
+  },
+  "homepage": "https://github.com/topaxi/angular-dropdown#readme",
+  "peerDependencies": {
+    "@angular/common": "^6.0.0-rc.0 || ^6.0.0",
+    "@angular/core": "^6.0.0-rc.0 || ^6.0.0",
+    "ng-wormhole": "^3.0.0",
+    "rxjs": "^6.0.0"
+  }
+}

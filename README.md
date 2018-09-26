@@ -5,7 +5,7 @@ A simple angular dropdown component
 ## Installation
 
 ```bash
-$ yarn add angular-dropdown angular-wormhole
+$ yarn add angular-dropdown ng-wormhole
 ```
 
 Import `AngularDropdownModule` in your app:
@@ -15,9 +15,7 @@ import { NgModule } from '@angular/core';
 import { AngularDropdownModule } from 'angular-dropdown';
 
 @NgModule({
-  imports: [
-    AngularDropdownModule
-  ]
+  imports: [AngularDropdownModule]
 })
 export class AppModule {}
 ```
@@ -48,7 +46,7 @@ In your SASS stylesheet:
 
 ### Inputs
 
-*renderInPlace: boolean = false*
+_renderInPlace: boolean = false_
 Should the component render its children in place?
 
 ```html
@@ -60,31 +58,31 @@ Should the component render its children in place?
 </div>
 ```
 
-*calculatePosition: (trigger: Element, dropdown: Element, options: any) => any*
+_calculatePosition: (trigger: Element, dropdown: Element, options: any) => any_
 Overwrite the default calculatePosition function
 
-*calculateInPlacePosition: (trigger: Element, dropdown: Element, options: any) => any*
+_calculateInPlacePosition: (trigger: Element, dropdown: Element, options: any) => any_
 Overwrite the default calculatePosition function used when dropdown is
 rendered in-place.
 
-*disabled: boolean = false*
+_disabled: boolean = false_
 Disable the dropdown
 
-*beforeOpen: () => boolean = null*
+_beforeOpen: () => boolean = null_
 Hook before the dropdown is opened, return false to cancel it.
 
-*beforeClose: () => boolean = null*
+_beforeClose: () => boolean = null_
 Hook before the dropdown is closed, return false to cancel it.
 
-*verticalPosition: 'auto' | 'above' | 'below'*
+_verticalPosition: 'auto' | 'above' | 'below'_
 Vertical positioning
 
-*horizontalPosition: 'auto' | 'right' | 'center' | 'left'*
+_horizontalPosition: 'auto' | 'right' | 'center' | 'left'_
 Horizontal positioning
 
 ### Outputs
 
-*open: void*
+_open: void_
 Triggers when opening the dropdown
 
 ```html
@@ -96,7 +94,7 @@ Triggers when opening the dropdown
 </div>
 ```
 
-*close: void*
+_close: void_
 Triggers when closing the dropdown
 
 ```html
@@ -112,18 +110,42 @@ Triggers when closing the dropdown
 
 ### Inputs
 
-*dropdownClass: string*
+_dropdownClass: string_
 Class to apply on the dropdown element, classes with animations will be
 properly animated.
 
-*transitioningInClass: string = 'ng-dropdown-content--transitioning-in'*
+_transitioningInClass: string = 'ng-dropdown-content--transitioning-in'_
 Class which will be applied when the dropdown element is inserted into the DOM.
 
-*transitionedInClass: string = 'ng-dropdown-content--transitioned-in'*
+_transitionedInClass: string = 'ng-dropdown-content--transitioned-in'_
 Class which will be applied once the transitioningInClass animation finished.
 
-*transitioningOutClass: string = 'ng-dropdown-content--transitioning-out'*
+_transitioningOutClass: string = 'ng-dropdown-content--transitioning-out'_
 Class which will be applied when closing the dropdown.
+
+## Development server
+
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+
+## Code scaffolding
+
+Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+
+## Build
+
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+
+## Running unit tests
+
+Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+
+## Running end-to-end tests
+
+Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+
+## Further help
+
+To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
 
 # Credits
 
