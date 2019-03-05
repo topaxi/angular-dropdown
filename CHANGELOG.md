@@ -1,6 +1,6 @@
 # Changelog
 
-## master
+## 0.5.1
 
 Fix several possible null pointer errors
 
