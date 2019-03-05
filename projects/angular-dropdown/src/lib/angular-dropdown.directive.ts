@@ -31,9 +31,9 @@ export interface AngularDropdownPositionChanges {
   hPosition: 'right' | 'center' | 'left';
 }
 
-let id = 1;
+let _id = 1;
 function generateDropdownId() {
-  return id++;
+  return _id++;
 }
 
 export type VerticalPosition = 'auto' | 'above' | 'below';
@@ -113,12 +113,12 @@ export class AngularDropdownDirective implements OnChanges {
   @Output('close')
   onClose = this.isOpen$.pipe(filter(open => open === false));
 
-  get triggerElement(): HTMLElement {
-    return this.control!.element.nativeElement;
+  get triggerElement(): HTMLElement | null {
+    return this.control && this.control.element.nativeElement;
   }
 
-  get dropdownElement(): HTMLElement {
-    return this.document.getElementById(this.dropdownId)!;
+  get dropdownElement(): HTMLElement | null {
+    return this.document.getElementById(this.dropdownId);
   }
 
   @ContentChild(forwardRef(() => AngularDropdownContentComponent))
@@ -229,16 +229,16 @@ export class AngularDropdownDirective implements OnChanges {
       return null;
     }
 
-    let dropdownElement = this.dropdownElement;
+    const dropdownElement = this.dropdownElement;
     if (!dropdownElement || !this.triggerElement) {
       return null;
     }
 
-    let calculatePosition = this.renderInPlace
+    const _calculatePosition = this.renderInPlace
       ? this.calculateInPlacePosition
       : this.calculatePosition;
 
-    let options = {
+    const options = {
       horizontalPosition: this.horizontalPosition,
       verticalPosition: this.verticalPosition,
       matchTriggerWidth: this.matchTriggerWidth,
@@ -246,7 +246,7 @@ export class AngularDropdownDirective implements OnChanges {
       previousVerticalPosition: this.previousVerticalPosition
     };
 
-    let positionData = calculatePosition(
+    const positionData = _calculatePosition(
       this.triggerElement,
       dropdownElement,
       options
@@ -264,7 +264,7 @@ export class AngularDropdownDirective implements OnChanges {
     dropdown: HTMLElement,
     positions: any
   ): AngularDropdownPositionChanges {
-    let changes: any = {
+    const changes: any = {
       hPosition: positions.horizontalPosition,
       vPosition: positions.verticalPosition
     };
@@ -308,7 +308,7 @@ export class AngularDropdownDirective implements OnChanges {
 
   private createDefaultWormholeOutlet(): void {
     if (!this.document.getElementById('ng-dropdown-outlet')) {
-      let outlet = this.document.createElement('div');
+      const outlet = this.document.createElement('div');
       outlet.id = 'ng-dropdown-outlet';
       this.document.body.insertBefore(outlet, this.document.body.firstChild);
     }

@@ -49,7 +49,7 @@ export class AngularDropdownContentComponent
   @Input()
   transitioningOutClass = 'ng-dropdown-content--transitioning-out';
 
-  private get dropdownElement(): HTMLElement {
+  private get dropdownElement(): HTMLElement | null {
     return this.dropdown.dropdownElement;
   }
 
@@ -77,10 +77,12 @@ export class AngularDropdownContentComponent
   }
 
   set animationClass(className: string | null) {
-    if (this._animationClass && className !== this._animationClass) {
-      this.dropdownElement.classList.remove(this._animationClass);
-    } else if (className) {
-      this.dropdownElement.classList.add(className);
+    if (this.dropdownElement !== null) {
+      if (this._animationClass && className !== this._animationClass) {
+        this.dropdownElement.classList.remove(this._animationClass);
+      } else if (className) {
+        this.dropdownElement.classList.add(className);
+      }
     }
     this._animationClass = className;
   }
@@ -89,7 +91,7 @@ export class AngularDropdownContentComponent
     return this._animationClass;
   }
 
-  get triggerElement(): Element {
+  get triggerElement(): Element | null {
     return this.dropdown.triggerElement;
   }
 
@@ -126,7 +128,7 @@ export class AngularDropdownContentComponent
       );
     }
 
-    let changes = this.dropdown.reposition();
+    const changes = this.dropdown.reposition();
     if (!this.dropdown.renderInPlace) {
       this.addGlobalEvents();
       this.startObservingDomMutations();
@@ -152,38 +154,44 @@ export class AngularDropdownContentComponent
   }
 
   private animateOut(): void {
-    let parentElement = this.dropdown.renderInPlace
-      ? this.dropdownElement.parentElement!.parentElement
-      : this.dropdownElement.parentElement;
-    let clone = this.dropdownElement.cloneNode(true) as HTMLElement;
+    if (this.dropdownElement === null) {
+      return;
+    }
+
+    const parentElement = this.dropdown.renderInPlace
+      ? this.dropdownElement.parentElement!.parentElement!
+      : this.dropdownElement.parentElement!;
+    const clone = this.dropdownElement.cloneNode(true) as HTMLElement;
     clone.id = `${this.dropdownElement.id}--clone`;
     clone.classList.remove(this.transitionedInClass);
     clone.classList.remove(this.transitioningInClass);
     clone.classList.add(this.transitioningOutClass);
-    parentElement!.appendChild(clone);
+    parentElement.appendChild(clone);
     this.animationClass = this.transitioningInClass;
-    waitForAnimation(clone, () => parentElement!.removeChild(clone));
+    waitForAnimation(clone, () => parentElement.removeChild(clone));
   }
 
   private handleRootMouseDown = (e: Event): void => {
+    const { target } = e as Event & { target: Element };
+
     if (
       this.hasMoved ||
-      this.dropdownElement.contains(e.target as Element) ||
-      (this.triggerElement &&
-        this.triggerElement.contains(e.target as Element))
+      (this.dropdownElement !== null &&
+        this.dropdownElement.contains(target)) ||
+      (this.triggerElement !== null && this.triggerElement.contains(target))
     ) {
       this.hasMoved = false;
       return;
     }
 
-    let closestDropdown = closest(e.target as Element, 'ng-dropdown-content');
-    if (closestDropdown) {
-      let trigger = this.document.querySelector(
+    const closestDropdown = closest(target, 'ng-dropdown-content');
+    if (closestDropdown !== null) {
+      const trigger = this.document.querySelector(
         `[aria-controls=${closestDropdown.getAttribute('id')}]`
       );
-      let parentDropdown = closest(trigger!, 'ng-dropdown-content');
+      const parentDropdown = closest(trigger!, 'ng-dropdown-content');
       if (
-        parentDropdown &&
+        parentDropdown !== null &&
         parentDropdown.getAttribute('id') === this.dropdown.dropdownId
       ) {
         this.hasMoved = false;
@@ -195,7 +203,7 @@ export class AngularDropdownContentComponent
   };
 
   private startObservingDomMutations(): void {
-    if (MutationObserver) {
+    if (MutationObserver !== undefined) {
       this.mutationObserver = new MutationObserver((mutations: any) => {
         if (
           mutations[0].addedNodes.length ||
@@ -204,17 +212,17 @@ export class AngularDropdownContentComponent
           this.repositionInZone();
         }
       });
-      this.mutationObserver!.observe(this.dropdownElement, {
+      this.mutationObserver!.observe(this.dropdownElement!, {
         childList: true,
         subtree: true
       });
     } else {
-      this.dropdownElement.addEventListener(
+      this.dropdownElement!.addEventListener(
         'DOMNodeInserted',
         this.repositionInZone,
         false
       );
-      this.dropdownElement.addEventListener(
+      this.dropdownElement!.addEventListener(
         'DOMNodeRemoved',
         this.repositionInZone,
         false
@@ -229,7 +237,7 @@ export class AngularDropdownContentComponent
         this.mutationObserver = null;
       }
     } else {
-      if (this.dropdownElement) {
+      if (this.dropdownElement !== null) {
         this.dropdownElement.removeEventListener(
           'DOMNodeInserted',
           this.repositionInZone

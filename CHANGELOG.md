@@ -1,5 +1,9 @@
 # Changelog
 
+## master
+
+Fix several possible null pointer errors
+
 ## 0.5.0
 
 Update dependencies and use ng-packagr

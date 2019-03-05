@@ -1,9 +1,18 @@
-export function waitForAnimation(element: Element, callback: (e?: Event) => any): void {
-  requestAnimationFrame(() => {
-    let computedStyle = window.getComputedStyle(element);
+export function waitForAnimation(
+  element: Element | null,
+  callback: (e?: Event) => any
+): void {
+  if (element === null) {
+    return;
+  }
 
-    if (computedStyle.animationName !== 'none' &&
-        computedStyle.animationPlayState === 'running') {
+  requestAnimationFrame(() => {
+    const computedStyle = window.getComputedStyle(element);
+
+    if (
+      computedStyle.animationName !== 'none' &&
+      computedStyle.animationPlayState === 'running'
+    ) {
       return once(element, 'animationend', callback);
     }
 
@@ -11,7 +20,11 @@ export function waitForAnimation(element: Element, callback: (e?: Event) => any)
   });
 }
 
-function once(element: Node, eventName: string, listener: (e: Event) => any): void {
+function once(
+  element: Node,
+  eventName: string,
+  listener: (e: Event) => any
+): void {
   element.addEventListener(eventName, function listenOnce(e) {
     element.removeEventListener(eventName, listenOnce);
 
@@ -19,27 +32,36 @@ function once(element: Node, eventName: string, listener: (e: Event) => any): vo
   });
 }
 
-export const closest: (element: Element, selector: string) => Element | null
-  = (window as any).Element && Element.prototype.closest ?
-    (el, s) => el.closest(s) :
-    function closest(self: Element, s: string) {
-      let matches = ((self as any).document || self.ownerDocument).querySelectorAll(s),
-        i,
-      el = self;
-      do {
-        i = matches.length;
-        while (--i >= 0 && matches.item(i) !== el) {};
-      } while ((i < 0) && (el = el.parentElement!));
-      return el;
-    };
+export const closest: (element: Element, selector: string) => Element | null =
+  (window as any).Element && Element.prototype.closest
+    ? (el, s) => el.closest(s)
+    : function _closest(self: Element, s: string) {
+        const matches = (
+          (self as any).document || self.ownerDocument
+        ).querySelectorAll(s);
+        let i;
+        let el: Element | null = self;
+        do {
+          i = matches.length;
+          while (--i >= 0 && matches.item(i) !== el) {}
+        } while (i < 0 && (el = el.parentElement));
+        return el;
+      };
 
 export function calculatePosition(
   trigger: Element,
   dropdown: Element,
-  { horizontalPosition, verticalPosition, matchTriggerWidth, previousHorizontalPosition, previousVerticalPosition }: any): any {
+  {
+    horizontalPosition,
+    verticalPosition,
+    matchTriggerWidth,
+    previousHorizontalPosition,
+    previousVerticalPosition
+  }: any
+): any {
   // Collect information about all the involved DOM elements
-  let scroll = { left: window.pageXOffset, top: window.pageYOffset };
-  let {
+  const scroll = { left: window.pageXOffset, top: window.pageYOffset };
+  const {
     left: triggerLeft,
     top: triggerTop,
     width: triggerWidth,
@@ -49,8 +71,8 @@ export function calculatePosition(
     height: dropdownHeight,
     width: dropdownWidth
   } = dropdown.getBoundingClientRect();
-  let viewportWidth = window.innerWidth;
-  let style: any = {};
+  const viewportWidth = window.innerWidth;
+  const style: any = {};
 
   // Calculate drop down width
   dropdownWidth = matchTriggerWidth ? triggerWidth : dropdownWidth;
@@ -59,12 +81,16 @@ export function calculatePosition(
   }
 
   // Calculate horizontal position
-  let triggerLeftWithScroll = triggerLeft + scroll.left;
+  const triggerLeftWithScroll = triggerLeft + scroll.left;
   if (horizontalPosition === 'auto') {
     // Calculate the number of visible horizontal pixels if we were to place the
     // dropdown on the left and right
-    let leftVisible = Math.min(viewportWidth, triggerLeft + dropdownWidth) - Math.max(0, triggerLeft);
-    let rightVisible = Math.min(viewportWidth, triggerLeft + triggerWidth) - Math.max(0, triggerLeft + triggerWidth - dropdownWidth);
+    const leftVisible =
+      Math.min(viewportWidth, triggerLeft + dropdownWidth) -
+      Math.max(0, triggerLeft);
+    const rightVisible =
+      Math.min(viewportWidth, triggerLeft + triggerWidth) -
+      Math.max(0, triggerLeft + triggerWidth - dropdownWidth);
 
     if (dropdownWidth > leftVisible && rightVisible > leftVisible) {
       // If the drop down won't fit left-aligned, and there is more space on the
@@ -88,43 +114,56 @@ export function calculatePosition(
   }
 
   // Calculate vertical position
-  let triggerTopWithScroll = triggerTop + scroll.top;
+  const triggerTopWithScroll = triggerTop + scroll.top;
   if (verticalPosition === 'above') {
     style.top = triggerTopWithScroll - dropdownHeight;
   } else if (verticalPosition === 'below') {
     style.top = triggerTopWithScroll + triggerHeight;
   } else {
-    let viewportBottom = scroll.top + self.window.innerHeight;
-    let enoughRoomBelow = triggerTopWithScroll + triggerHeight + dropdownHeight < viewportBottom;
-    let enoughRoomAbove = triggerTop > dropdownHeight;
+    const viewportBottom = scroll.top + self.window.innerHeight;
+    const enoughRoomBelow =
+      triggerTopWithScroll + triggerHeight + dropdownHeight < viewportBottom;
+    const enoughRoomAbove = triggerTop > dropdownHeight;
 
-    if (previousVerticalPosition === 'below' && !enoughRoomBelow && enoughRoomAbove) {
+    if (
+      previousVerticalPosition === 'below' &&
+      !enoughRoomBelow &&
+      enoughRoomAbove
+    ) {
       verticalPosition = 'above';
-    } else if (previousVerticalPosition === 'above' && !enoughRoomAbove && enoughRoomBelow) {
+    } else if (
+      previousVerticalPosition === 'above' &&
+      !enoughRoomAbove &&
+      enoughRoomBelow
+    ) {
       verticalPosition = 'below';
     } else if (!previousVerticalPosition) {
       verticalPosition = enoughRoomBelow ? 'below' : 'above';
     } else {
       verticalPosition = previousVerticalPosition;
     }
-    style.top = triggerTopWithScroll + (verticalPosition === 'below' ? triggerHeight : -dropdownHeight);
+    style.top =
+      triggerTopWithScroll +
+      (verticalPosition === 'below' ? triggerHeight : -dropdownHeight);
   }
 
   return { horizontalPosition, verticalPosition, style };
 }
 
 export function calculateInPlacePosition(
-    trigger: Element,
-    dropdown: Element,
-    { horizontalPosition, verticalPosition }: any) {
+  trigger: Element,
+  dropdown: Element,
+  { horizontalPosition, verticalPosition }: any
+) {
   let dropdownRect;
-  let positionData: any = {};
+  const positionData: any = {};
 
   if (horizontalPosition === 'auto') {
-    let triggerRect = trigger.getBoundingClientRect();
+    const triggerRect = trigger.getBoundingClientRect();
     dropdownRect = dropdown.getBoundingClientRect();
-    let viewportRight = window.pageXOffset + window.innerWidth;
-    positionData.horizontalPosition = triggerRect.left + dropdownRect.width > viewportRight ? 'right' : 'left';
+    const viewportRight = window.pageXOffset + window.innerWidth;
+    positionData.horizontalPosition =
+      triggerRect.left + dropdownRect.width > viewportRight ? 'right' : 'left';
   }
   if (verticalPosition === 'above') {
     positionData.verticalPosition = verticalPosition;

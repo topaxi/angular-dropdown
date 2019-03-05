@@ -3,16 +3,16 @@
     <div *ngIf="overlay && isOpen" class="ng-dropdown-overlay"></div>
     <div [id]="dropdown.dropdownId"
         class="ng-dropdown-content {{dropdownClass}}"
-        [style.top]="(dropdown.position$ | async).top"
-        [style.right]="(dropdown.position$ | async).right"
-        [style.bottom]="(dropdown.position$ | async).bottom"
-        [style.left]="(dropdown.position$ | async).left"
+        [style.top]="(dropdown.position$ | async)?.top"
+        [style.right]="(dropdown.position$ | async)?.right"
+        [style.bottom]="(dropdown.position$ | async)?.bottom"
+        [style.left]="(dropdown.position$ | async)?.left"
         [class.render-in-place]="dropdown.renderInPlace"
-        [class.ng-dropdown-content--above]="(dropdown.position$ | async).vPosition === 'above'"
-        [class.ng-dropdown-content--below]="(dropdown.position$ | async).vPosition === 'below'"
-        [class.ng-dropdown-content--right]="(dropdown.position$ | async).hPosition === 'right'"
-        [class.ng-dropdown-content--center]="(dropdown.position$ | async).hPosition === 'center'"
-        [class.ng-dropdown-content--left]="(dropdown.position$ | async).hPosition === 'left'">
+        [class.ng-dropdown-content--above]="(dropdown.position$ | async)?.vPosition === 'above'"
+        [class.ng-dropdown-content--below]="(dropdown.position$ | async)?.vPosition === 'below'"
+        [class.ng-dropdown-content--right]="(dropdown.position$ | async)?.hPosition === 'right'"
+        [class.ng-dropdown-content--center]="(dropdown.position$ | async)?.hPosition === 'center'"
+        [class.ng-dropdown-content--left]="(dropdown.position$ | async)?.hPosition === 'left'">
       <ng-content></ng-content>
     </div>
   </ng-container>
