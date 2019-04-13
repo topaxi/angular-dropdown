@@ -106,6 +106,19 @@ Triggers when closing the dropdown
 </div>
 ```
 
+### Programatically open/close
+
+```html
+<div ngDropdown #dropdown="ngDropdown">
+  <button (click)="ngDropdown.open()">Open Dropdown!</button>
+  <button (click)="ngDropdown.close()">Close Dropdown!</button>
+
+  <div ngDropdownContent>
+    ...
+  </div>
+</div>
+```
+
 ## ngDropdownContent
 
 ### Inputs

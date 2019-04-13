@@ -62,7 +62,8 @@ const EmptyDropdownContentPosition = Object.freeze({
   host: {
     '[class.render-in-place]': 'renderInPlace',
     '[class.ng-dropdown]': 'true'
-  }
+  },
+  exportAs: 'ngDropdown'
 })
 export class AngularDropdownDirective implements OnChanges {
   id?: string;
