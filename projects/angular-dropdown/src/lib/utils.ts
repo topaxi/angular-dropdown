@@ -33,7 +33,7 @@ function once(
 }
 
 export const closest: (element: Element, selector: string) => Element | null =
-  (window as any).Element && Element.prototype.closest
+  typeof Element != 'undefined' && Element.prototype.closest
     ? (el, s) => el.closest(s)
     : function _closest(self: Element, s: string) {
         const matches = (
