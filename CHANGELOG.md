@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.3
+
+Fix usage with Angular Universal (thanks to @macwac)
+
 ## 0.5.1
 
 Fix several possible null pointer errors
