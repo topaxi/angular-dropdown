@@ -10,18 +10,22 @@ import {
 
 import { AngularDropdownDirective }
   from './angular-dropdown.directive';
+import { Subscription } from 'rxjs';
 
 @Directive({
   selector: '[ng-dropdown-control],[ngDropdownControl]',
   host: {
     '[attr.aria-haspopup]': 'true',
     '[attr.aria-controls]': 'dropdown.id',
-    '[attr.aria-expanded]': 'dropdown.isOpen',
+    '[attr.aria-expanded]': 'isDropdownOpen',
     '[class.ng-dropdown-control]': 'true',
-    '[class.active]': 'dropdown.isOpen'
+    '[class.active]': 'isDropdownOpen'
   }
 })
 export class AngularDropdownControlDirective {
+  isDropdownOpen: boolean = false;
+  dropdownStateSubscription?: Subscription;
+
   @HostListener('click', [ '$event' ])
   onClick(e: Event): void {
     e.stopPropagation();
@@ -36,5 +40,15 @@ export class AngularDropdownControlDirective {
       @Inject(forwardRef(() => AngularDropdownDirective))
       public dropdown: AngularDropdownDirective,
       public element: ElementRef) {
+  }
+
+  ngOnInit() {
+    this.dropdownStateSubscription = this.dropdown.isOpen$.subscribe(
+      isOpen => (this.isDropdownOpen = isOpen)
+    );
+  }
+
+  ngOnDestroy(){
+    this.dropdownStateSubscription && this.dropdownStateSubscription.unsubscribe();
   }
 }
